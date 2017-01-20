@@ -1,0 +1,57 @@
+---
+version: 1
+
+disable_existing_loggers: false
+
+formatters:
+    muxed:
+        format: "[%(process)d] - %(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s"
+
+    single:
+        format: "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s"
+
+    access:
+        format: "%(asctime)s - %(message)s"
+
+handlers:
+    muxlog:
+        class: muxlog.MultiPlexedLog
+        level: DEBUG
+        mode: a
+        formatter: muxed
+        filename: /esc/egnyte/logs/smbc-service/smbc-service.log
+        maxBytes: 10485760
+        backupCount: 10
+
+    serverlog:
+        class: logging.handlers.RotatingFileHandler
+        level: DEBUG
+        mode: a
+        formatter: single
+        filename: /esc/egnyte/logs/smbc-service/smbc-server.log
+        maxBytes: 10485760
+        backupCount: 10
+
+    serveraccesslog:
+        class: logging.handlers.RotatingFileHandler
+        level: DEBUG
+        mode: a
+        formatter: access
+        filename: /esc/egnyte/logs/smbc-service/smbc-server-access.log
+        maxBytes: 10485760
+        backupCount: 5
+
+loggers:
+    server:
+        level: INFO
+        handlers: [serverlog]
+        propagate: 0
+
+    serveraccess:
+        level: INFO
+        handlers: [serveraccesslog]
+        propagate: 0
+
+root:
+    level: INFO
+    handlers: [muxlog]
